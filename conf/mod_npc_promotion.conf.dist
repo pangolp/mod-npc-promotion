@@ -1,15 +1,81 @@
+#######################################################
+### AzerothCore Module Promotion configuration file ###
+#######################################################
 [worldserver]
 
+###################################################################################################
+# SECTION INDEX
 #
-# Announce Enable
-# default: true
+#    CONFIG MODULE
+#    CLASS ENABLE
 #
+###################################################################################################
+
+###################################################################################################
+#	CONFIG MODULE
+#
+#		NpcPromotion.enable
+#
+#			Description:	Variable that enables or disables the module
+#
+#			Example:	"true" - (Enabled)
+#						"false" - (Disabled)
+#
+#        Default:     true
 
 NpcPromotion.enable=true
 
 #
-# Module Enable
-# default: true
+#		NpcPromotion.announceEnable
 #
+#		Description:	Enables the message on the server.
+#
+#			Example:	"true" - (Enabled)
+#						"false" - (Disabled)
+#
+#        Default:     true
 
 NpcPromotion.announceEnable=true
+
+#
+#		NpcPromotion.count
+#
+#		Description:	Amount of promotion per account.
+#
+#			Example:	1 - (One)
+#						2 - (Two)
+#
+#        Default:     1
+
+NpcPromotion.count = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#	CLASS ENABLE
+#
+#		NpcPromotionWarriorTank.enable
+#
+#			Description:	Enables the promotion of tank warriors
+#
+#			Example:	"true" - (Enabled)
+#						"false" - (Disabled)
+#
+#        Default:     true
+
+NpcPromotionWarriorTank.enable=true
+
+#		NpcPromotionWarriordps.enable
+#
+#			Description:	Enable dps warriors
+#
+#			Example:	"true" - (Enabled)
+#						"false" - (Disabled)
+#
+#        Default:     true
+
+NpcPromotionWarriordps.enable=true
+
+#
+###################################################################################################
