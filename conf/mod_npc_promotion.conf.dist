@@ -1,0 +1,8 @@
+[worldserver]
+
+#
+# Announce Enable
+# default: true
+#
+
+RecruitFriend.announceEnable=false
