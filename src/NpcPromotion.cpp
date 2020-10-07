@@ -9,6 +9,8 @@
 #include "Config.h"
 #include "Chat.h"
 
+static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
+
 class NpcPromotionAnnouncer : public PlayerScript
 {
     public:
@@ -16,7 +18,7 @@ class NpcPromotionAnnouncer : public PlayerScript
 
         void OnLogin(Player* player)
         {
-            if (announceEnable)
+            if (npcPromotionAnnounceEnable)
             {
                 ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00Npc Promotion |rmodule.");
             }
@@ -42,8 +44,8 @@ public:
             sConfigMgr->LoadMore(cfg_def_file.c_str());
             sConfigMgr->LoadMore(cfg_file.c_str());
 
-            recruitEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", false);
-            recruitAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", false);
+            npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", false);
+            npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
 
         }
     }
@@ -51,4 +53,5 @@ public:
 
 void AddNpcPromotionScripts() {
     new NpcPromotionAnnouncer();
+    new NpcPromotionWorld();
 }

@@ -5,4 +5,11 @@
 # default: true
 #
 
-RecruitFriend.announceEnable=false
+NpcPromotion.enable=true
+
+#
+# Module Enable
+# default: true
+#
+
+NpcPromotion.announceEnable=true
