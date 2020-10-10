@@ -1,3 +1,4 @@
+
 SET @ID:=90000;
 
 DELETE FROM `npc_text` WHERE `ID`=@ID;

@@ -1,3 +1,4 @@
+
 SET @MENUID:=62000;
 
 DELETE FROM `gossip_menu_option` WHERE `MenuID`=@MENUID AND `OptionID` BETWEEN 0 AND 21;

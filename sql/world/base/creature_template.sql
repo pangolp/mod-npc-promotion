@@ -1,3 +1,4 @@
+
 SET @ENTRY:=100000;
 SET @NAME:="AzerothCore";
 SET @SUBNAME:="Promotion";
