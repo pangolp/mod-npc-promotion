@@ -8,9 +8,10 @@
 #include "Player.h"
 #include "Config.h"
 #include "Chat.h"
+#include "NpcPromotion.h"
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
-static int npcPromotionCount;
+static int npcPromotionCount, npcPromotionIpCount;
 static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled;
 
 class NpcPromotionAnnouncer : public PlayerScript
@@ -27,46 +28,26 @@ class NpcPromotionAnnouncer : public PlayerScript
         }
 };
 
-enum NpcPromotionGossip
+void equiparWarriorTank(Player* player)
 {
-    GOSSIP_MENU_PROMOTION = 62000,
-    GOSSIP_MENU_WARRIOR_TANK = 0,
-    GOSSIP_MENU_WARRIOR_DPS = 1,
-    GOSSIP_MENU_PALADIN_TANK = 2,
-    GOSSIP_MENU_PALADIN_HEAL = 3,
-    GOSSIP_MENU_PALADIN_DPS = 4,
-    GOSSIP_MENU_HUNTER = 5,
-    GOSSIP_MENU_ROGUE = 6,
-    GOSSIP_MENU_PRIEST_HEAL = 7,
-    GOSSIP_MENU_DEATH_KNIGHT_TANK = 8,
-    GOSSIP_MENU_DEATH_KNIGHT_DPS = 9,
-    GOSSIP_MENU_PRIEST_DPS = 10,
-    GOSSIP_MENU_SHAMAN_CASTER = 11,
-    GOSSIP_MENU_SHAMAN_MELEE = 12,
-    GOSSIP_MENU_MAGE = 13,
-    GOSSIP_MENU_WARLOCK = 14,
-    GOSSIP_MENU_DRUID_TANK = 15,
-    GOSSIP_MENU_DRUID_HEAL = 16,
-    GOSSIP_MENU_DRUID_CASTER = 17,
-    GOSSIP_MENU_DRUID_MELEE = 18,
-    GOSSIP_MENU_CLOSE = 19,
-};
-
-enum NpcPromotionQuest
-{
-    QUEST_WHERE_KINGS_WALK = 13188,
-    QUEST_WARCHIEFS_BLESSING = 13189,
-};
-
-enum NpcTextId
-{
-    NPC_TEXT_ID = 90000
-};
-
-enum NpcItem
-{
-    BAG_WARRIOR_TANK = 29886
-};
+    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_WARRIOR_TANK_HEAD, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_WARRIOR_TANK_NECK, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_WARRIOR_TANK_SHOULDERS, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_WARRIOR_TANK_CHEST, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_WARRIOR_TANK_WAIST, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_WARRIOR_TANK_LEGS, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_WARRIOR_TANK_FEET, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_WARRIOR_TANK_WRISTS, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_WARRIOR_TANK_HANDS, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_WARRIOR_TANK_FINGER1, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_WARRIOR_TANK_FINGER2, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_WARRIOR_TANK_TRINKET1, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_WARRIOR_TANK_TRINKET2, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_WARRIOR_TANK_BACK, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_WARRIOR_TANK_MAINHAND, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_WARRIOR_TANK_OFFHAND, true);
+    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_WARRIOR_TANK_RANGED, true);
+}
 
 class npc_promocion : public CreatureScript
 {
@@ -75,7 +56,7 @@ class npc_promocion : public CreatureScript
 
         uint8 getAccountPromotionCount(uint32 accountId)
         {
-            QueryResult result = CharacterDatabase.PQuery("SELECT COUNT(`accountId`) FROM `promotion` WHERE `accountId` = %u", accountId);
+            QueryResult result = LoginDatabase.PQuery("SELECT COUNT(`accountId`) FROM `promotion` WHERE `accountId` = %u", accountId);
 
             if (result)
             {
@@ -86,22 +67,39 @@ class npc_promocion : public CreatureScript
             return 0;
         }
 
+        uint8 getIpPromotionCount(uint32 accountId)
+        {
+            QueryResult result = LoginDatabase.PQuery("SELECT COUNT(`ip`) FROM `promotion` WHERE `accountId` = %u", accountId);
+
+            if (result)
+            {
+                Field* fields = result->Fetch();
+                return fields[0].GetUInt8();
+            }
+
+            return 0;
+
+        }
+
         bool addPromotionLog(Player* player)
         {
             uint32 accountId = player->GetSession()->GetAccountId();
             std::string accountName;
             AccountMgr::GetName(accountId, accountName);
             std::string characterName = player->GetSession()->GetPlayerName();
+            std::string ipAccount = player->GetSession()->GetRemoteAddress();
 
-            QueryResult result = CharacterDatabase.PQuery("INSERT INTO `promotion` (`accountId`, `accountName`, `characterName`) VALUES (%u, '%s', '%s')", accountId, accountName.c_str(), characterName.c_str());
+            QueryResult result = LoginDatabase.PQuery("INSERT INTO `promotion` (`accountId`, `accountName`, `characterName`, `ip`) VALUES (%u, '%s', '%s', '%s')",
+                accountId, accountName.c_str(), characterName.c_str(), ipAccount.c_str());
             return true;
         }
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
-            uint8 count = getAccountPromotionCount(player->GetSession()->GetAccountId());
+            uint8 countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
+            uint8 countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
 
-            if ((player->getLevel() < 80) && ((count < npcPromotionCount)))
+            if ((player->getLevel() < 80) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
             {
                 switch (player->getClass())
                 {
@@ -153,6 +151,10 @@ class npc_promocion : public CreatureScript
                         break;
                 }
             }
+
+            if (player->getLevel() == 80)
+                AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+
             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 20);
             SendGossipMenuFor(player, NPC_TEXT_ID, creature);
             return true;
@@ -167,8 +169,14 @@ class npc_promocion : public CreatureScript
                 case GOSSIP_ACTION_INFO_DEF + 1:
                     addPromotionLog(player);
                     player->GiveLevel(80);
-                    player->AddItem(20400, 4);
-                    player->AddItem(BAG_WARRIOR_TANK, 1);
+                    player->InitTalentForLevel();
+                    player->SetUInt32Value(PLAYER_XP, 0);
+                    player->AddItem(20400, 3);
+                    player->EquipNewItem(INVENTORY_SLOT_BAG_START, 20400, true);
+                    player->learnSpell(PLATE_MAIL);
+                    equiparWarriorTank(player);
+                    /* 2000 de oro */
+                    player->ModifyMoney(20000000);
                     player->UpdateSkillsToMaxSkillsForLevel();
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 2:
@@ -177,6 +185,10 @@ class npc_promocion : public CreatureScript
                     player->AddItem(20400, 4);
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 20:
+                    break;
+                case GOSSIP_ACTION_INFO_DEF + 21:
+                    /* Teleport a Dalaran si es 80. */
+                    player->TeleportTo(571, 5804.14f, 624.77f, 647.76f, 1.64f);
                     break;
                 default:
                     break;
@@ -208,6 +220,7 @@ public:
             npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", true);
             npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
             npcPromotionCount = sConfigMgr->GetIntDefault("NpcPromotion.count", 1);
+            npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);
