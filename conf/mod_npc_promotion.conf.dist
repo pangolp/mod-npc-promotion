@@ -50,6 +50,19 @@ NpcPromotion.announceEnable=true
 NpcPromotion.count = 1
 
 #
+#		NpcPromotion.countIp
+#
+#		Description:	Number of promotions per ip.
+#
+#		Example:
+#				1 - (One)
+#				2 - (Two)
+#
+#        Default:     1
+
+NpcPromotion.countIp = 1
+
+#
 ###################################################################################################
 
 ###################################################################################################
