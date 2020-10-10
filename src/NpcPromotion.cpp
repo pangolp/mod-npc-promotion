@@ -23,7 +23,7 @@ class NpcPromotionAnnouncer : public PlayerScript
         {
             if (npcPromotionAnnounceEnable)
             {
-                ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00Npc Promotion |rmodule.");
+                ChatHandler(player->GetSession()).SendSysMessage(40000);
             }
         }
 };
@@ -34,7 +34,7 @@ void promotionPlayerTemplate(Player* player)
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
     player->AddItem(20400, 3);
-    player->EquipNewItem(INVENTORY_SLOT_BAG_START, 20400, true);
+    player->EquipNewItem(INVENTORY_SLOT_BAG_START + 1, 20400, true);
     /* 2500 de oro */
     player->ModifyMoney(25000000);
     player->UpdateSkillsToMaxSkillsForLevel();
@@ -702,8 +702,7 @@ class NpcPromotionCommand : public CommandScript
         {
             static std::vector<ChatCommand> commandTable
             {
-                { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" },
-                { "reset", SEC_CONSOLE, false, &HandleResetNpcPromotionCommand, "" }
+                { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" }
             };
 
             static std::vector<ChatCommand> promotionCommandTable =
@@ -778,11 +777,6 @@ class NpcPromotionCommand : public CommandScript
                 (ChatHandler(handler->GetSession())).PSendSysMessage(SMSG_CHAT_PLAYER_NOT_FOUND);
             }
 
-            return true;
-        }
-
-        static bool HandleResetNpcPromotionCommand(ChatHandler* handler, const char* args)
-        {
             return true;
         }
 };
