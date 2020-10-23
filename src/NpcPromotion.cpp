@@ -33,9 +33,8 @@ void promotionPlayerTemplate(Player* player)
     player->GiveLevel(80);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
-    player->AddItem(20400, 3);
-    player->EquipNewItem(INVENTORY_SLOT_BAG_START + 1, 20400, true);
-    /* 2500 de oro */
+    player->AddItem(20400, 4);
+    /* 2500 Gold */
     player->ModifyMoney(25000000);
     player->UpdateSkillsToMaxSkillsForLevel();
 }
