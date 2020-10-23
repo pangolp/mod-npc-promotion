@@ -1,20 +1,19 @@
-# SKELETON - Module template
+# Mod Npc Promotion
 
 [English](README.md) | [Español](README_ES.md)
 
+This module, aims to provide a promotion to players within the server. It is still under development, but the idea is to make it as configurable as possible, modifying values within the configuration files (.conf)
 
-## How to create your own module
+Make sure you run all the .sql's inside the folder. I recommend cloning the repository using git so you don't miss out on future updates.
 
-1. Use the script `create_module.sh` located in [`modules/`](https://github.com/azerothcore/azerothcore-wotlk/tree/master/modules) to start quickly with all the files you need and your git repo configured correctly (heavily recommended).
-1. You can then use these scripts to start your project: https://github.com/azerothcore/azerothcore-boilerplates
-1. Do not hesitate to compare with some of our newer/bigger/famous modules.
-1. Edit the `README.md` and other files (`include.sh` etc...) to fit your module. Note: the README is automatically created from `README_example.md` when you use the script `create_module.sh`.
-1. Publish your module to our [catalogue](https://github.com/azerothcore/modules-catalogue).
+Soon I will be making a video in Spanish, to explain how it works.
 
+## Credits
 
-## How to test your module?
+* [Nefertum](https://gitlab.com/Nefertum) (module author)
+* [Stevej / Pangolp](https://github.com/pangolp) (module author)
+* [BarbzYHOOL](https://github.com/barbzyhool)
+* [Talamortis](https://github.com/talamortis)
 
-Disable PCH (precompiled headers) and try to compile. To disable PCH, set `-DNOPCH=1` with Cmake (more info [here](http://www.azerothcore.org/wiki/CMake-options)).
-
-If you forgot some headers, it is time to add them!
-
+[Translator](https://www.deepl.com/translator)
+AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)
