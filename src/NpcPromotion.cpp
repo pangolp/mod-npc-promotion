@@ -11,7 +11,8 @@
 #include "NpcPromotion.h"
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
-static int npcPromotionCount, npcPromotionIpCount;
+static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
+    npcPromotionMoney;
 static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
     npcPromotionEnableIpLimit;
 
@@ -34,9 +35,7 @@ void promotionPlayerTemplate(Player* player)
     player->GiveLevel(80);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
-    player->AddItem(20400, 4);
-    /* 2500 Gold */
-    player->ModifyMoney(25000000);
+    player->ModifyMoney(npcPromotionMoney);
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
@@ -503,7 +502,7 @@ class npc_promocion : public CreatureScript
                 countIp = -1;
             }
 
-            if ((player->getLevel() < 80) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
+            if ((player->getLevel() < npcPromotionMaxLevel) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
             {
                 switch (player->getClass())
                 {
@@ -557,7 +556,7 @@ class npc_promocion : public CreatureScript
                 }
             }
 
-            if (player->getLevel() == 80)
+            if (player->getLevel() >= npcPromotionMaxLevel)
                 AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
 
             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
@@ -810,6 +809,8 @@ public:
             npcPromotionCount = sConfigMgr->GetIntDefault("NpcPromotion.count", 1);
             npcPromotionEnableIpLimit = sConfigMgr->GetBoolDefault("NpcPromotion.enableIpLimit", true);
             npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
+            npcPromotionMaxLevel = sConfigMgr->GetIntDefault("NpcPromotion.maxLevel", 80);
+            npcPromotionMoney = sConfigMgr->GetIntDefault("NpcPromotion.money", 25000000);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);

@@ -67,6 +67,32 @@ NpcPromotion.enableIpLimit = true
 NpcPromotion.countIp = 1
 
 #
+#		NpcPromotion.MaxLevel
+#
+#		Description:	Set max level to receive a promotion
+#
+#		Example:
+#				80 - (All characters with level lower than 80 can apply for promotion)
+#
+#		Default:     80
+
+NpcPromotion.MaxLevel = 80
+
+
+
+#
+#		NpcPromotion.money
+#
+#		Description:	Set amount of money to give on promotion
+#
+#		Example:
+#				25009999 - (Will give 2500 gold, 99 silver and 99 cooper)
+#
+#		Default:     25000000
+
+NpcPromotion.money = 25000000
+
+#
 ###################################################################################################
 
 ###################################################################################################
