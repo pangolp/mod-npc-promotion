@@ -21,9 +21,9 @@
 #			Example:	"true" - (Enabled)
 #						"false" - (Disabled)
 #
-#        Default:     true
+#		Default:     true
 
-NpcPromotion.enable=true
+NpcPromotion.enable = true
 
 #
 #		NpcPromotion.announceEnable
@@ -33,33 +33,37 @@ NpcPromotion.enable=true
 #			Example:	"true" - (Enabled)
 #						"false" - (Disabled)
 #
-#        Default:     true
+#		Default:     true
 
-NpcPromotion.announceEnable=true
+NpcPromotion.announceEnable = true
 
 #
 #		NpcPromotion.count
 #
 #		Description:	Amount of promotion per account.
 #
-#			Example:	1 - (One)
-#						2 - (Two)
-#
-#        Default:     1
-
-NpcPromotion.count = 1
-
-#
-#		NpcPromotion.countIp
-#
-#		Description:	Number of promotions per ip.
-#
 #		Example:
 #				1 - (One)
 #				2 - (Two)
 #
-#        Default:     1
+#		Default:     1
 
+NpcPromotion.count = 1
+
+#
+#		Promotion per IP configuration
+#
+#		Description:	Number of promotions per ip.
+#
+#		Example:
+#				NpcPromotion.enableIpLimit = true (Enable limit per IP)
+#				NpcPromotion.count = 1 (Max promotions per IP)
+#
+#		Default:
+#				NpcPromotion.enableIpLimit = true
+#				NpcPromotion.count = 1
+
+NpcPromotion.enableIpLimit = true
 NpcPromotion.countIp = 1
 
 #
@@ -75,7 +79,7 @@ NpcPromotion.countIp = 1
 #			Example:	"true" - (Enabled)
 #						"false" - (Disabled)
 #
-#        Default:     true
+#		Default:     true
 
 NpcPromotionWarriorTank.enable=true
 
@@ -86,7 +90,7 @@ NpcPromotionWarriorTank.enable=true
 #			Example:	"true" - (Enabled)
 #						"false" - (Disabled)
 #
-#        Default:     true
+#		Default:     true
 
 NpcPromotionWarriordps.enable=true
 

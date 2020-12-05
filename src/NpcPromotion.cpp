@@ -12,7 +12,8 @@
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount;
-static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled;
+static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
+    npcPromotionEnableIpLimit;
 
 class NpcPromotionAnnouncer : public PlayerScript
 {
@@ -495,7 +496,12 @@ class npc_promocion : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature)
         {
             uint8 countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
-            uint8 countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
+            int8 countIp;
+            if (npcPromotionEnableIpLimit) {
+                countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
+            } else {
+                countIp = -1;
+            }
 
             if ((player->getLevel() < 80) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
             {
@@ -802,6 +808,7 @@ public:
             npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", true);
             npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
             npcPromotionCount = sConfigMgr->GetIntDefault("NpcPromotion.count", 1);
+            npcPromotionEnableIpLimit = sConfigMgr->GetBoolDefault("NpcPromotion.enableIpLimit", true);
             npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
