@@ -12,9 +12,11 @@
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
-    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount;
+    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
+    NpcPromotionMountReward;
 static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
-    npcPromotionEnableIpLimit, NpcPromotionBagEnable, NpcPromotionEquippedbags;
+    npcPromotionEnableIpLimit, NpcPromotionBagEnable, NpcPromotionEquippedbags,
+    NpcPromotionMountEnable;
 
 class NpcPromotionAnnouncer : public PlayerScript
 {
@@ -54,6 +56,14 @@ void promotionPlayerTemplate(Player* player)
         }
     }
 
+    // Riding
+    if (NpcPromotionMountEnable) {
+        player->learnSpell(SKILL_RIDING_75);
+        player->learnSpell(SKILL_RIDING_100);
+        player->learnSpell(SKILL_RIDING_FLYING);
+        player->learnSpell(SKILL_RIDING_ARTISING);
+        player->learnSpell(NpcPromotionMountReward);
+    }
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
@@ -834,6 +844,9 @@ public:
             NpcPromotionEquippedbags = sConfigMgr->GetIntDefault("NpcPromotion.equippedbags", true);
             npcPromotionBag = sConfigMgr->GetIntDefault("NpcPromotion.bag", 20400);
             npcPromotionBagAmount = sConfigMgr->GetIntDefault("NpcPromotion.bagAmount", 4);
+
+            NpcPromotionMountEnable = sConfigMgr->GetBoolDefault("NpcPromotion.mountEnable", true);
+            NpcPromotionMountReward = sConfigMgr->GetIntDefault("NpcPromotion.mountReward", 74856);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);

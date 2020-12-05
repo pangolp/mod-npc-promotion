@@ -115,6 +115,21 @@ NpcPromotion.bag = 20400
 NpcPromotion.bagAmount = 4
 
 #
+#		Mount configuration
+#
+#		Example:
+#				NpcPromotion.mountEnable = true (enable mount reward)
+#				NpcPromotion.mountReward = 74856 (Will learn Blazing Hippogryph as mount)
+#
+#		Default:
+#				NpcPromotion.mountEnable = true
+#				NpcPromotion.mountReward = 74856
+
+NpcPromotion.mountEnable = true
+NpcPromotion.mountReward = 74856
+
+
+#
 ###################################################################################################
 
 ###################################################################################################

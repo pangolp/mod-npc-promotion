@@ -42,6 +42,14 @@ enum NpcTextId
     NPC_TEXT_ID = 90000
 };
 
+enum RidingSkills
+{
+    SKILL_RIDING_75 = 33388, // Rinding 75
+    SKILL_RIDING_100 = 33391, // Rinding 100
+    SKILL_RIDING_FLYING = 34090,
+    SKILL_RIDING_ARTISING = 34091,
+};
+
 enum WeaponsSkills
 {
     BLOCK = 107,
