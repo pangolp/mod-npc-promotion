@@ -12,9 +12,9 @@
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
-    npcPromotionMoney;
+    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount;
 static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
-    npcPromotionEnableIpLimit;
+    npcPromotionEnableIpLimit, NpcPromotionBagEnable, NpcPromotionEquippedbags;
 
 class NpcPromotionAnnouncer : public PlayerScript
 {
@@ -35,7 +35,25 @@ void promotionPlayerTemplate(Player* player)
     player->GiveLevel(80);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
+
     player->ModifyMoney(npcPromotionMoney);
+
+    //Bags
+    if (NpcPromotionBagEnable) {
+        if (NpcPromotionEquippedbags) {
+            for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+                if (Item* bag = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                    player->DestroyItem(INVENTORY_SLOT_BAG_0, slot, true);
+
+            for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+                player->EquipNewItem(slot, npcPromotionBag, true);
+        }
+        else
+        {
+            player->AddItem(npcPromotionBag, npcPromotionBagAmount);
+        }
+    }
+
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
@@ -811,6 +829,11 @@ public:
             npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
             npcPromotionMaxLevel = sConfigMgr->GetIntDefault("NpcPromotion.maxLevel", 80);
             npcPromotionMoney = sConfigMgr->GetIntDefault("NpcPromotion.money", 25000000);
+
+            NpcPromotionBagEnable = sConfigMgr->GetIntDefault("NpcPromotion.bagEnable", true);
+            NpcPromotionEquippedbags = sConfigMgr->GetIntDefault("NpcPromotion.equippedbags", true);
+            npcPromotionBag = sConfigMgr->GetIntDefault("NpcPromotion.bag", 20400);
+            npcPromotionBagAmount = sConfigMgr->GetIntDefault("NpcPromotion.bagAmount", 4);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);
