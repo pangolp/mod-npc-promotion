@@ -840,8 +840,8 @@ public:
             npcPromotionMaxLevel = sConfigMgr->GetIntDefault("NpcPromotion.maxLevel", 80);
             npcPromotionMoney = sConfigMgr->GetIntDefault("NpcPromotion.money", 25000000);
 
-            NpcPromotionBagEnable = sConfigMgr->GetIntDefault("NpcPromotion.bagEnable", true);
-            NpcPromotionEquippedbags = sConfigMgr->GetIntDefault("NpcPromotion.equippedbags", true);
+            NpcPromotionBagEnable = sConfigMgr->GetBoolDefault("NpcPromotion.bagEnable", true);
+            NpcPromotionEquippedbags = sConfigMgr->GetBoolDefault("NpcPromotion.equippedbags", true);
             npcPromotionBag = sConfigMgr->GetIntDefault("NpcPromotion.bag", 20400);
             npcPromotionBagAmount = sConfigMgr->GetIntDefault("NpcPromotion.bagAmount", 4);
 

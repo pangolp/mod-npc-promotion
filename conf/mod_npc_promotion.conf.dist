@@ -78,8 +78,6 @@ NpcPromotion.countIp = 1
 
 NpcPromotion.MaxLevel = 80
 
-
-
 #
 #		NpcPromotion.money
 #
@@ -127,7 +125,6 @@ NpcPromotion.bagAmount = 4
 
 NpcPromotion.mountEnable = true
 NpcPromotion.mountReward = 74856
-
 
 #
 ###################################################################################################
