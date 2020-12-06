@@ -11,8 +11,12 @@
 #include "NpcPromotion.h"
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
-static int npcPromotionCount, npcPromotionIpCount;
-static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled;
+static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
+    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
+    NpcPromotionMountReward;
+static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
+    npcPromotionEnableIpLimit, NpcPromotionBagEnable, NpcPromotionEquippedbags,
+    NpcPromotionMountEnable;
 
 class NpcPromotionAnnouncer : public PlayerScript
 {
@@ -33,9 +37,33 @@ void promotionPlayerTemplate(Player* player)
     player->GiveLevel(80);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
-    player->AddItem(20400, 4);
-    /* 2500 Gold */
-    player->ModifyMoney(25000000);
+
+    player->ModifyMoney(npcPromotionMoney);
+
+    //Bags
+    if (NpcPromotionBagEnable) {
+        if (NpcPromotionEquippedbags) {
+            for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+                if (Item* bag = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                    player->DestroyItem(INVENTORY_SLOT_BAG_0, slot, true);
+
+            for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+                player->EquipNewItem(slot, npcPromotionBag, true);
+        }
+        else
+        {
+            player->AddItem(npcPromotionBag, npcPromotionBagAmount);
+        }
+    }
+
+    // Riding
+    if (NpcPromotionMountEnable) {
+        player->learnSpell(SKILL_RIDING_75);
+        player->learnSpell(SKILL_RIDING_100);
+        player->learnSpell(SKILL_RIDING_FLYING);
+        player->learnSpell(SKILL_RIDING_ARTISING);
+        player->learnSpell(NpcPromotionMountReward);
+    }
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
@@ -495,9 +523,14 @@ class npc_promocion : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature)
         {
             uint8 countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
-            uint8 countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
+            int8 countIp;
+            if (npcPromotionEnableIpLimit) {
+                countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
+            } else {
+                countIp = -1;
+            }
 
-            if ((player->getLevel() < 80) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
+            if ((player->getLevel() < npcPromotionMaxLevel) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
             {
                 switch (player->getClass())
                 {
@@ -551,7 +584,7 @@ class npc_promocion : public CreatureScript
                 }
             }
 
-            if (player->getLevel() == 80)
+            if (player->getLevel() >= npcPromotionMaxLevel)
                 AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
 
             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
@@ -559,7 +592,7 @@ class npc_promocion : public CreatureScript
             return true;
         }
 
-        bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+        bool OnGossipSelect(Player* player, Creature* /* creature */, uint32 /*sender*/, uint32 action)
         {
             ClearGossipMenuFor(player);
 
@@ -802,7 +835,18 @@ public:
             npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", true);
             npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
             npcPromotionCount = sConfigMgr->GetIntDefault("NpcPromotion.count", 1);
+            npcPromotionEnableIpLimit = sConfigMgr->GetBoolDefault("NpcPromotion.enableIpLimit", true);
             npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
+            npcPromotionMaxLevel = sConfigMgr->GetIntDefault("NpcPromotion.maxLevel", 80);
+            npcPromotionMoney = sConfigMgr->GetIntDefault("NpcPromotion.money", 25000000);
+
+            NpcPromotionBagEnable = sConfigMgr->GetBoolDefault("NpcPromotion.bagEnable", true);
+            NpcPromotionEquippedbags = sConfigMgr->GetBoolDefault("NpcPromotion.equippedbags", true);
+            npcPromotionBag = sConfigMgr->GetIntDefault("NpcPromotion.bag", 20400);
+            npcPromotionBagAmount = sConfigMgr->GetIntDefault("NpcPromotion.bagAmount", 4);
+
+            NpcPromotionMountEnable = sConfigMgr->GetBoolDefault("NpcPromotion.mountEnable", true);
+            NpcPromotionMountReward = sConfigMgr->GetIntDefault("NpcPromotion.mountReward", 74856);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);
