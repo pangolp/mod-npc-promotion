@@ -829,8 +829,7 @@ public:
 #endif
             std::string cfg_def_file = cfg_file + ".dist";
 
-            sConfigMgr->LoadMore(cfg_def_file.c_str());
-            sConfigMgr->LoadMore(cfg_file.c_str());
+            sConfigMgr->LoadModulesConfigs();
 
             npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", true);
             npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
