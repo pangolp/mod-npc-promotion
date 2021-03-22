@@ -76,7 +76,7 @@ NpcPromotion.countIp = 1
 #
 #		Default:     80
 
-NpcPromotion.MaxLevel = 80
+NpcPromotion.maxLevel = 80
 
 #
 #		NpcPromotion.money
