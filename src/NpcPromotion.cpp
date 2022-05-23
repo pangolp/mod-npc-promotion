@@ -13,6 +13,10 @@
 #include "GossipDef.h"
 #include "ScriptedGossip.h"
 
+#if AC_COMPILER == AC_COMPILER_GNU
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
     npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
@@ -727,24 +731,26 @@ class npc_promocion : public CreatureScript
         }
 };
 
+using namespace Acore::ChatCommands;
+
 class NpcPromotionCommand : public CommandScript
 {
 public:
     NpcPromotionCommand() : CommandScript("NpcPromotionCommand") { }
 
-    std::vector<ChatCommand> GetCommands() const override
+    ChatCommandTable GetCommands() const override
     {
-        static std::vector<ChatCommand> commandTable
+        static ChatCommandTable promotionSetCommandTable =
         {
             { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" }
         };
 
-        static std::vector<ChatCommand> promotionCommandTable =
+        static ChatCommandTable commandTable =
         {
-            { "promotion", SEC_MODERATOR, false, nullptr, "", commandTable}
+            { "promotion", SEC_MODERATOR, false, nullptr, "", promotionSetCommandTable}
         };
 
-        return promotionCommandTable;
+        return commandTable;
     }
 
     static void getTargetAccountIdByName(std::string& name, uint32& accountId)
