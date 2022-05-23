@@ -729,91 +729,90 @@ class npc_promocion : public CreatureScript
 
 class NpcPromotionCommand : public CommandScript
 {
-    public:
+public:
+    NpcPromotionCommand() : CommandScript("NpcPromotionCommand") { }
 
-        NpcPromotionCommand() : CommandScript("NpcPromotionCommand") { }
-
-        std::vector<ChatCommand> GetCommands() const override
+    std::vector<ChatCommand> GetCommands() const override
+    {
+        static std::vector<ChatCommand> commandTable
         {
-            static std::vector<ChatCommand> commandTable
-            {
-                { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" }
-            };
+            { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" }
+        };
 
-            static std::vector<ChatCommand> promotionCommandTable =
-            {
-                { "promotion", SEC_MODERATOR, false, nullptr, "", commandTable}
-            };
-
-            return promotionCommandTable;
-        }
-
-        static void getTargetAccountIdByName(std::string& name, uint32& accountId)
+        static std::vector<ChatCommand> promotionCommandTable =
         {
-            QueryResult result = CharacterDatabase.Query("SELECT `account` FROM `characters` WHERE `name`='{}';", name);
-            accountId = (*result)[0].Get<int32>();
-        }
+            { "promotion", SEC_MODERATOR, false, nullptr, "", commandTable}
+        };
 
-        static bool HandleViewNpcPromotionCommand(ChatHandler* handler, const char* args)
+        return promotionCommandTable;
+    }
+
+    static void getTargetAccountIdByName(std::string& name, uint32& accountId)
+    {
+        QueryResult result = CharacterDatabase.Query("SELECT `account` FROM `characters` WHERE `name`='{}';", name);
+        accountId = (*result)[0].Get<int32>();
+    }
+
+    static bool HandleViewNpcPromotionCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        Player* target = nullptr;
+        std::string playerName;
+
+        if (!handler->extractPlayerTarget((char*)args, &target, nullptr, &playerName))
+            return false;
+
+        uint32 playerAccountId;
+
+        if (target)
+            playerAccountId = target->GetSession()->GetAccountId();
+        else
+            getTargetAccountIdByName(playerName, playerAccountId);
+
+        QueryResult result = LoginDatabase.Query("SELECT * FROM `account` WHERE `id`={};", playerAccountId);
+        QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `promotion` WHERE `accountId`={};", playerAccountId);
+
+        if (result)
         {
-            if (!*args)
-                return false;
+            Field* fields = result->Fetch();
+            std::string accountName = fields[1].Get<std::string>();
+            std::string email = fields[7].Get<std::string>();
+            std::string ip = fields[10].Get<std::string>();
+            uint8 online = fields[16].Get<uint8>();
+            uint32 recruiter = fields[23].Get<uint32>();
 
-            Player* target = nullptr;
-            std::string playerName;
+            handler->PSendSysMessage("                                                      ");
+            handler->PSendSysMessage(" ------------------------------------------------     ");
+            handler->PSendSysMessage(" Username : {}", accountName.c_str());
+            handler->PSendSysMessage(" Email : {}", email.c_str());
+            handler->PSendSysMessage(" Last IP : {}", ip.c_str());
+            handler->PSendSysMessage(" Online : {}", online ? " [ONLINE]" : "[OFFLINE]");
+            handler->PSendSysMessage(" Recruiter : {}", recruiter);
+            handler->PSendSysMessage(" ------------------------------------------------     ");
+            handler->PSendSysMessage("      --- LISTA DE PERSONAJES ---                     ");
 
-            if (!handler->extractPlayerTarget((char*)args, &target, nullptr, &playerName))
-                return false;
-
-            uint32 playerAccountId;
-
-            if (target)
-                playerAccountId = target->GetSession()->GetAccountId();
-            else
-                getTargetAccountIdByName(playerName, playerAccountId);
-
-            QueryResult result = LoginDatabase.Query("SELECT * FROM `account` WHERE `id`={};", playerAccountId);
-            QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `promotion` WHERE `accountId`={};", playerAccountId);
-
-            if (result)
+            if (resultPromotion)
             {
-                Field* fields = result->Fetch();
-                std::string accountName = fields[1].Get<std::string>();
-                std::string email = fields[7].Get<std::string>();
-                std::string ip = fields[10].Get<std::string>();
-                uint8 online = fields[16].Get<uint8>();
-                uint32 recruiter = fields[23].Get<uint32>();
-
-                handler->PSendSysMessage("                                                      ");
-                handler->PSendSysMessage(" ------------------------------------------------     ");
-                handler->PSendSysMessage(" Username : {}", accountName.c_str());
-                handler->PSendSysMessage(" Email : {}", email.c_str());
-                handler->PSendSysMessage(" Last IP : {}", ip.c_str());
-                handler->PSendSysMessage(" Online : {}", online ? " [ONLINE]" : "[OFFLINE]");
-                handler->PSendSysMessage(" Recruiter : {}", recruiter);
-                handler->PSendSysMessage(" ------------------------------------------------     ");
-                handler->PSendSysMessage("      --- LISTA DE PERSONAJES ---                     ");
-
-                if (resultPromotion)
+                do
                 {
-                    do
-                    {
-                        Field* promotion = resultPromotion->Fetch();
-                        std::string characterName = promotion[3].Get<std::string>();
-                        std::string ip = promotion[4].Get<std::string>();
-                        std::string date = promotion[5].Get<std::string>();
-                        handler->PSendSysMessage("Character: {}, {}: {}, date: {}", characterName.c_str(), ip.c_str(), date.c_str());
-                    } while (resultPromotion->NextRow());
-                }
-                return true;
+                    Field* promotion = resultPromotion->Fetch();
+                    std::string characterName = promotion[3].Get<std::string>();
+                    std::string ip = promotion[4].Get<std::string>();
+                    std::string date = promotion[5].Get<std::string>();
+                    handler->PSendSysMessage("Character: {}, {}: {}, date: {}", characterName.c_str(), ip.c_str(), date.c_str());
+                } while (resultPromotion->NextRow());
             }
-            else
-            {
-                (ChatHandler(handler->GetSession())).PSendSysMessage(SMSG_CHAT_PLAYER_NOT_FOUND);
-            }
-
             return true;
         }
+        else
+        {
+            (ChatHandler(handler->GetSession())).PSendSysMessage(SMSG_CHAT_PLAYER_NOT_FOUND);
+        }
+
+        return true;
+    }
 };
 
 class NpcPromotionWorld : public WorldScript
