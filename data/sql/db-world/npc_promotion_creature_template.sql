@@ -13,4 +13,4 @@ INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entr
 -- LOCALE
 DELETE FROM `creature_template_locale` WHERE `entry` = @Entry;
 INSERT INTO `creature_template_locale` (`entry`, `locale`, `Name`, `Title`, `VerifiedBuild`) VALUES
-(@Entry, "zhCN", "卡拉波魔兽", "直升服务", 18019);
+(@Entry, "zhCN", "新人伴手礼", "直升服务", 18019);
