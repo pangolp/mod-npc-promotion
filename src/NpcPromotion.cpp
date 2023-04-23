@@ -482,10 +482,10 @@ void equipmentDruidCaster(Player* player)
     player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DRUID_CASTER_RANGED, true);
 }
 
-class npc_promocion : public CreatureScript
+class npc_promotion : public CreatureScript
 {
     public:
-        npc_promocion() : CreatureScript("npc_promocion") {}
+        npc_promotion() : CreatureScript("npc_promotion") {}
 
         uint8 getAccountPromotionCount(uint32 accountId)
         {
@@ -865,6 +865,6 @@ void AddNpcPromotionScripts()
 {
     new NpcPromotionAnnouncer();
     new NpcPromotionWorld();
-    new npc_promocion();
+    new npc_promotion();
     new NpcPromotionCommand();
 }
