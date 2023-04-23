@@ -19,7 +19,8 @@
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
-    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount, NpcPromotionMountReward, NpcPromotionFlyableMountReward;
+    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
+    NpcPromotionMountReward, NpcPromotionFlyableMountReward;
 static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
     npcPromotionEnableIpLimit, NpcPromotionMoneyEnable, NpcPromotionBagEnable, NpcPromotionEquippedBags,
     NpcPromotionMountEnable;
@@ -540,7 +541,7 @@ class npc_promotion : public CreatureScript
                 countIp = -1;
             }
 
-            if ((player->getLevel() < npcPromotionMaxLevel) &&  ((countAccount < npcPromotionCount)) && (countIp < npcPromotionIpCount))
+            if ((player->getLevel() < npcPromotionMaxLevel) && (countAccount < npcPromotionCount) && (countIp < npcPromotionIpCount))
             {
                 switch (player->getClass())
                 {
