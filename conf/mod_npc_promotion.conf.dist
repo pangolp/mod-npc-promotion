@@ -121,14 +121,17 @@ NpcPromotion.bagAmount = 4
 #
 #		Example:
 #				NpcPromotion.mountEnable = true (enable mount reward)
-#				NpcPromotion.mountReward = 74856 (Will learn Blazing Hippogryph as mount)
+#				NpcPromotion.mountReward = 51412 (Will learn Big Battle Bear as mount)
+#				NpcPromotion.flyableMountReward = 74856 (Will learn Blazing Hippogryph as flyable mount)
 #
 #		Default:
 #				NpcPromotion.mountEnable = true
-#				NpcPromotion.mountReward = 74856
+#				NpcPromotion.mountReward = 51412
+#				NpcPromotion.flyableMountReward = 74856
 
 NpcPromotion.mountEnable = true
-NpcPromotion.mountReward = 74856
+NpcPromotion.mountReward = 51412
+NpcPromotion.flyableMountReward = 74856
 
 #
 ###################################################################################################
