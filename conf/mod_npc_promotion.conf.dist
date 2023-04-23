@@ -79,15 +79,19 @@ NpcPromotion.countIp = 1
 NpcPromotion.maxLevel = 80
 
 #
-#		NpcPromotion.money
+#		Money configuration
 #
 #		Description:	Set amount of money to give on promotion
 #
 #		Example:
-#				25009999 - (Will give 2500 gold, 99 silver and 99 cooper)
+#       NpcPromotion.moneyEnable = true - (Enable money rewards)
+#       NpcPromotion.money = 25009999 - (Will give 2500 gold, 99 silver and 99 cooper)
 #
-#		Default:     25000000
+#		Default:     
+#       NpcPromotion.moneyEnable = true
+#       NpcPromotion.money = 25000000
 
+NpcPromotion.moneyEnable = false
 NpcPromotion.money = 25000000
 
 #
@@ -97,18 +101,18 @@ NpcPromotion.money = 25000000
 #
 #		Example:
 #				NpcPromotion.bagEnable = true - (Enable bag rewards)
-#				NpcPromotion.equippedbags = true - (Autoequip bags on promotion)
+#				NpcPromotion.equippedBags = true - (Autoequip bags on promotion)
 #				NpcPromotion.bag = 20400 - (Will give Pumpkin bag)
 #				NpcPromotion.bagAmount = 3 - (Will give 3 promotion bags)
 #
 #		Default:
 #				NpcPromotion.bagEnable = true
-#				NpcPromotion.equippedbags = true
+#				NpcPromotion.equippedBags = true
 #				NpcPromotion.bag = 20400
 #				NpcPromotion.bagAmount = 4
 
 NpcPromotion.bagEnable = true
-NpcPromotion.equippedbags = true
+NpcPromotion.equippedBags = true
 NpcPromotion.bag = 20400
 NpcPromotion.bagAmount = 4
 
@@ -143,7 +147,7 @@ NpcPromotion.mountReward = 74856
 
 NpcPromotionWarriorTank.enable=true
 
-#		NpcPromotionWarriordps.enable
+#		NpcPromotionWarriorDps.enable
 #
 #			Description:	Enable dps warriors
 #
@@ -152,7 +156,7 @@ NpcPromotionWarriorTank.enable=true
 #
 #		Default:     true
 
-NpcPromotionWarriordps.enable=true
+NpcPromotionWarriorDps.enable=true
 
 #
 ###################################################################################################
