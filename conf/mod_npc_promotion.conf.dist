@@ -12,100 +12,100 @@
 ###################################################################################################
 
 ###################################################################################################
-#	CONFIG MODULE
+#   CONFIG MODULE
 #
-#		NpcPromotion.enable
+#       NpcPromotion.enable
 #
-#			Description:	Variable that enables or disables the module
+#           Description:    Variable that enables or disables the module
 #
-#			Example:	"true" - (Enabled)
-#						"false" - (Disabled)
+#           Example:    "true" - (Enabled)
+#                       "false" - (Disabled)
 #
-#		Default:     true
+#       Default:     true
 
 NpcPromotion.enable = true
 
 #
-#		NpcPromotion.announceEnable
+#       NpcPromotion.announceEnable
 #
-#		Description:	Enables the message on the server.
+#       Description:    Enables the message on the server.
 #
-#			Example:	"true" - (Enabled)
-#						"false" - (Disabled)
+#           Example:    "true" - (Enabled)
+#                       "false" - (Disabled)
 #
-#		Default:     true
+#       Default:     true
 
 NpcPromotion.announceEnable = true
 
 #
-#		NpcPromotion.count
+#       NpcPromotion.count
 #
-#		Description:	Amount of promotion per account.
+#       Description:    Amount of promotion per account.
 #
-#		Example:
-#				1 - (One)
-#				2 - (Two)
+#       Example:
+#               1 - (One)
+#               2 - (Two)
 #
-#		Default:     1
+#       Default:     1
 
 NpcPromotion.count = 1
 
 #
-#		Promotion per IP configuration
+#       Promotion per IP configuration
 #
-#		Description:	Number of promotions per ip.
+#       Description:    Number of promotions per ip.
 #
-#		Example:
-#				NpcPromotion.enableIpLimit = true (Enable limit per IP)
-#				NpcPromotion.count = 1 (Max promotions per IP)
+#       Example:
+#               NpcPromotion.enableIpLimit = true (Enable limit per IP)
+#               NpcPromotion.count = 1 (Max promotions per IP)
 #
-#		Default:
-#				NpcPromotion.enableIpLimit = true
-#				NpcPromotion.count = 1
+#       Default:
+#               NpcPromotion.enableIpLimit = true
+#               NpcPromotion.count = 1
 
 NpcPromotion.enableIpLimit = true
 NpcPromotion.countIp = 1
 
 #
-#		NpcPromotion.MaxLevel
+#       NpcPromotion.MaxLevel
 #
-#		Description:	Set max level to receive a promotion
+#       Description:    Set max level to receive a promotion
 #
-#		Example:
-#				80 - (All characters with level lower than 80 can apply for promotion)
+#       Example:
+#               80 - (All characters with level lower than 80 can apply for promotion)
 #
-#		Default:     80
+#       Default:     80
 
 NpcPromotion.maxLevel = 80
 
 #
-#		NpcPromotion.money
+#       NpcPromotion.money
 #
-#		Description:	Set amount of money to give on promotion
+#       Description:    Set amount of money to give on promotion
 #
-#		Example:
-#				25009999 - (Will give 2500 gold, 99 silver and 99 cooper)
+#       Example:
+#               25009999 - (Will give 2500 gold, 99 silver and 99 cooper)
 #
-#		Default:     25000000
+#       Default:     25000000
 
 NpcPromotion.money = 25000000
 
 #
-#		Bag configuration
+#       Bag configuration
 #
-#		Description:	Set item id for the bag to give on promotion
+#       Description:    Set item id for the bag to give on promotion
 #
-#		Example:
-#				NpcPromotion.bagEnable = true - (Enable bag rewards)
-#				NpcPromotion.equippedbags = true - (Autoequip bags on promotion)
-#				NpcPromotion.bag = 20400 - (Will give Pumpkin bag)
-#				NpcPromotion.bagAmount = 3 - (Will give 3 promotion bags)
+#       Example:
+#               NpcPromotion.bagEnable = true - (Enable bag rewards)
+#               NpcPromotion.equippedbags = true - (Autoequip bags on promotion)
+#               NpcPromotion.bag = 20400 - (Will give Pumpkin bag)
+#               NpcPromotion.bagAmount = 3 - (Will give 3 promotion bags)
 #
-#		Default:
-#				NpcPromotion.bagEnable = true
-#				NpcPromotion.equippedbags = true
-#				NpcPromotion.bag = 20400
-#				NpcPromotion.bagAmount = 4
+#       Default:
+#               NpcPromotion.bagEnable = true
+#               NpcPromotion.equippedbags = true
+#               NpcPromotion.bag = 20400
+#               NpcPromotion.bagAmount = 4
 
 NpcPromotion.bagEnable = true
 NpcPromotion.equippedbags = true
@@ -113,15 +113,15 @@ NpcPromotion.bag = 20400
 NpcPromotion.bagAmount = 4
 
 #
-#		Mount configuration
+#       Mount configuration
 #
-#		Example:
-#				NpcPromotion.mountEnable = true (enable mount reward)
-#				NpcPromotion.mountReward = 74856 (Will learn Blazing Hippogryph as mount)
+#       Example:
+#               NpcPromotion.mountEnable = true (enable mount reward)
+#               NpcPromotion.mountReward = 74856 (Will learn Blazing Hippogryph as mount)
 #
-#		Default:
-#				NpcPromotion.mountEnable = true
-#				NpcPromotion.mountReward = 74856
+#       Default:
+#               NpcPromotion.mountEnable = true
+#               NpcPromotion.mountReward = 74856
 
 NpcPromotion.mountEnable = true
 NpcPromotion.mountReward = 74856
@@ -130,27 +130,27 @@ NpcPromotion.mountReward = 74856
 ###################################################################################################
 
 ###################################################################################################
-#	CLASS ENABLE
+#   CLASS ENABLE
 #
-#		NpcPromotionWarriorTank.enable
+#       NpcPromotionWarriorTank.enable
 #
-#			Description:	Enables the promotion of tank warriors
+#           Description:    Enables the promotion of tank warriors
 #
-#			Example:	"true" - (Enabled)
-#						"false" - (Disabled)
+#           Example:    "true" - (Enabled)
+#                       "false" - (Disabled)
 #
-#		Default:     true
+#       Default:     true
 
 NpcPromotionWarriorTank.enable=true
 
-#		NpcPromotionWarriordps.enable
+#       NpcPromotionWarriordps.enable
 #
-#			Description:	Enable dps warriors
+#           Description:    Enable dps warriors
 #
-#			Example:	"true" - (Enabled)
-#						"false" - (Disabled)
+#           Example:    "true" - (Enabled)
+#                       "false" - (Disabled)
 #
-#		Default:     true
+#       Default:     true
 
 NpcPromotionWarriordps.enable=true
 

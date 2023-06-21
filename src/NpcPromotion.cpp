@@ -4,7 +4,6 @@
     https://github.com/pangolp
  */
 
-#include "loader.h"
 #include "ScriptMgr.h"
 #include "Player.h"
 #include "Config.h"
@@ -12,10 +11,6 @@
 #include "NpcPromotion.h"
 #include "GossipDef.h"
 #include "ScriptedGossip.h"
-
-#if AC_COMPILER == AC_COMPILER_GNU
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
@@ -44,18 +39,21 @@ void promotionPlayerTemplate(Player* player)
     player->GiveLevel(80);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
-
     player->ModifyMoney(npcPromotionMoney);
 
     //Bags
-    if (NpcPromotionBagEnable) {
-        if (NpcPromotionEquippedbags) {
+    if (NpcPromotionBagEnable)
+    {
+        if (NpcPromotionEquippedbags)
+        {
             for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+            {
                 if (Item* bag = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                {
                     player->DestroyItem(INVENTORY_SLOT_BAG_0, slot, true);
-
-            for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
+                }
                 player->EquipNewItem(slot, npcPromotionBag, true);
+            }
         }
         else
         {
@@ -64,7 +62,8 @@ void promotionPlayerTemplate(Player* player)
     }
 
     // Riding
-    if (NpcPromotionMountEnable) {
+    if (NpcPromotionMountEnable)
+    {
         player->learnSpell(SKILL_RIDING_75);
         player->learnSpell(SKILL_RIDING_100);
         player->learnSpell(SKILL_RIDING_FLYING);
@@ -74,412 +73,22 @@ void promotionPlayerTemplate(Player* player)
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
-void equipmentWarriorTank(Player* player)
+void equipmentPlayer(Player* player, uint8 playerClass, uint8 playerTeam, std::string playerFunction)
 {
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_WARRIOR_TANK_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_WARRIOR_TANK_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_WARRIOR_TANK_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_WARRIOR_TANK_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_WARRIOR_TANK_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_WARRIOR_TANK_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_WARRIOR_TANK_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_WARRIOR_TANK_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_WARRIOR_TANK_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_WARRIOR_TANK_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_WARRIOR_TANK_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_WARRIOR_TANK_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_WARRIOR_TANK_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_WARRIOR_TANK_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_WARRIOR_TANK_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_WARRIOR_TANK_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_WARRIOR_TANK_RANGED, true);
-}
+    QueryResult result = LoginDatabase.Query("SELECT `head`, `neck`, `shoulders`, `body`, `chest`, `waist`, `legs`, `feet`, `wrists`, `hands`, `finger1`, `finger2`, `trinket1`, `trinket2`, `back`, `mainhand`, `offhand`, `ranged`, `tabard` FROM `mod_npc_promotion_items` WHERE `class`={} AND `faction`={} AND `function`='{}';", playerClass, playerTeam, playerFunction);
 
-void equipmentWarriorDps(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_WARRIOR_DPS_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_WARRIOR_DPS_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_WARRIOR_DPS_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_WARRIOR_DPS_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_WARRIOR_DPS_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_WARRIOR_DPS_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_WARRIOR_DPS_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_WARRIOR_DPS_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_WARRIOR_DPS_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_WARRIOR_DPS_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_WARRIOR_DPS_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_WARRIOR_DPS_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_WARRIOR_DPS_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_WARRIOR_DPS_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_WARRIOR_DPS_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_WARRIOR_DPS_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_WARRIOR_DPS_RANGED, true);
-}
-
-void equipmentPaladinTank(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_PALADIN_TANK_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_PALADIN_TANK_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_PALADIN_TANK_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_PALADIN_TANK_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_PALADIN_TANK_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_PALADIN_TANK_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_PALADIN_TANK_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_PALADIN_TANK_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_PALADIN_TANK_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_PALADIN_TANK_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_PALADIN_TANK_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_PALADIN_TANK_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_PALADIN_TANK_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_PALADIN_TANK_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_PALADIN_TANK_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_PALADIN_TANK_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_PALADIN_TANK_RANGED, true);
-}
-
-void equipmentPaladinHeal(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_PALADIN_HEAL_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_PALADIN_HEAL_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_PALADIN_HEAL_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_PALADIN_HEAL_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_PALADIN_HEAL_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_PALADIN_HEAL_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_PALADIN_HEAL_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_PALADIN_HEAL_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_PALADIN_HEAL_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_PALADIN_HEAL_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_PALADIN_HEAL_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_PALADIN_HEAL_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_PALADIN_HEAL_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_PALADIN_HEAL_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_PALADIN_HEAL_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_PALADIN_HEAL_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_PALADIN_HEAL_RANGED, true);
-}
-
-void equipmentPaladinDps(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_PALADIN_DPS_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_PALADIN_DPS_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_PALADIN_DPS_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_PALADIN_DPS_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_PALADIN_DPS_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_PALADIN_DPS_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_PALADIN_DPS_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_PALADIN_DPS_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_PALADIN_DPS_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_PALADIN_DPS_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_PALADIN_DPS_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_PALADIN_DPS_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_PALADIN_DPS_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_PALADIN_DPS_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_PALADIN_DPS_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_PALADIN_DPS_RANGED, true);
-}
-
-void equipmentHunter(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_HUNTER_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_HUNTER_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_HUNTER_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_HUNTER_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_HUNTER_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_HUNTER_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_HUNTER_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_HUNTER_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_HUNTER_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_HUNTER_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_HUNTER_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_HUNTER_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_HUNTER_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_HUNTER_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_HUNTER_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_HUNTER_RANGED, true);
-}
-
-void equipmentRogue(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_ROGUE_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_ROGUE_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_ROGUE_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_ROGUE_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_ROGUE_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_ROGUE_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_ROGUE_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_ROGUE_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_ROGUE_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_ROGUE_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_ROGUE_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_ROGUE_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_ROGUE_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_ROGUE_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_ROGUE_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_ROGUE_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_ROGUE_RANGED, true);
-}
-
-void equipmentPriestHeal(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_PRIEST_HEAL_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_PRIEST_HEAL_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_PRIEST_HEAL_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_PRIEST_HEAL_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_PRIEST_HEAL_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_PRIEST_HEAL_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_PRIEST_HEAL_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_PRIEST_HEAL_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_PRIEST_HEAL_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_PRIEST_HEAL_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_PRIEST_HEAL_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_PRIEST_HEAL_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_PRIEST_HEAL_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_PRIEST_HEAL_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_PRIEST_HEAL_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_PRIEST_HEAL_RANGED, true);
-}
-
-void equipmentPriestShadow(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_PRIEST_SHADOW_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_PRIEST_SHADOW_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_PRIEST_SHADOW_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_PRIEST_SHADOW_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_PRIEST_SHADOW_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_PRIEST_SHADOW_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_PRIEST_SHADOW_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_PRIEST_SHADOW_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_PRIEST_SHADOW_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_PRIEST_SHADOW_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_PRIEST_SHADOW_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_PRIEST_SHADOW_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_PRIEST_SHADOW_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_PRIEST_SHADOW_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_PRIEST_SHADOW_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_PRIEST_SHADOW_RANGED, true);
-}
-
-void equipmentDkTank(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DK_TANK_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DK_TANK_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DK_TANK_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DK_TANK_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DK_TANK_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DK_TANK_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DK_TANK_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DK_TANK_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DK_TANK_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DK_TANK_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DK_TANK_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DK_TANK_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DK_TANK_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DK_TANK_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DK_TANK_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DK_TANK_RANGED, true);
-}
-
-void equipmentDkDps(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DK_DPS_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DK_DPS_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DK_DPS_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DK_DPS_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DK_DPS_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DK_DPS_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DK_DPS_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DK_DPS_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DK_DPS_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DK_DPS_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DK_DPS_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DK_DPS_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DK_DPS_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DK_DPS_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DK_DPS_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DK_DPS_RANGED, true);
-}
-
-void equipmentShamanCaster(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_SHAMAN_CASTER_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_SHAMAN_CASTER_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_SHAMAN_CASTER_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_SHAMAN_CASTER_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_SHAMAN_CASTER_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_SHAMAN_CASTER_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_SHAMAN_CASTER_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_SHAMAN_CASTER_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_SHAMAN_CASTER_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_SHAMAN_CASTER_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_SHAMAN_CASTER_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_SHAMAN_CASTER_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_SHAMAN_CASTER_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_SHAMAN_CASTER_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_SHAMAN_CASTER_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_SHAMAN_CASTER_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_SHAMAN_CASTER_RANGED, true);
-}
-
-void equipmentShamanMelee(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_SHAMAN_MELEE_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_SHAMAN_MELEE_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_SHAMAN_MELEE_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_SHAMAN_MELEE_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_SHAMAN_MELEE_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_SHAMAN_MELEE_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_SHAMAN_MELEE_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_SHAMAN_MELEE_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_SHAMAN_MELEE_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_SHAMAN_MELEE_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_SHAMAN_MELEE_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_SHAMAN_MELEE_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_SHAMAN_MELEE_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_SHAMAN_MELEE_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_SHAMAN_MELEE_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_SHAMAN_MELEE_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_SHAMAN_MELEE_RANGED, true);
-}
-
-void equipmentShamanHeal(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_SHAMAN_HEAL_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_SHAMAN_HEAL_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_SHAMAN_HEAL_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_SHAMAN_HEAL_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_SHAMAN_HEAL_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_SHAMAN_HEAL_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_SHAMAN_HEAL_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_SHAMAN_HEAL_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_SHAMAN_HEAL_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_SHAMAN_HEAL_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_SHAMAN_HEAL_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_SHAMAN_HEAL_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_SHAMAN_HEAL_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_SHAMAN_HEAL_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_SHAMAN_HEAL_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_OFFHAND, EQUIPMENT_SLOT_SHAMAN_HEAL_OFFHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_SHAMAN_HEAL_RANGED, true);
-}
-
-void equipmentMage(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_MAGE_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_MAGE_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_MAGE_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_MAGE_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_MAGE_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_MAGE_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_MAGE_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_MAGE_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_MAGE_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_MAGE_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_MAGE_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_MAGE_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_MAGE_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_MAGE_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_MAGE_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_MAGE_RANGED, true);
-}
-
-void equipmentWarlock(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_WARLOCK_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_WARLOCK_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_WARLOCK_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_WARLOCK_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_WARLOCK_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_WARLOCK_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_WARLOCK_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_WARLOCK_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_WARLOCK_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_WARLOCK_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_WARLOCK_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_WARLOCK_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_WARLOCK_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_WARLOCK_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_WARLOCK_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_WARLOCK_RANGED, true);
-}
-
-void equipmentDruidTank(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DRUID_TANK_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DRUID_TANK_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DRUID_TANK_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DRUID_TANK_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DRUID_TANK_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DRUID_TANK_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DRUID_TANK_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DRUID_TANK_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DRUID_TANK_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DRUID_TANK_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DRUID_TANK_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DRUID_TANK_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DRUID_TANK_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DRUID_TANK_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DRUID_TANK_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DRUID_TANK_RANGED, true);
-}
-
-void equipmentDruidHeal(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DRUID_HEAL_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DRUID_HEAL_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DRUID_HEAL_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DRUID_HEAL_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DRUID_HEAL_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DRUID_HEAL_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DRUID_HEAL_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DRUID_HEAL_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DRUID_HEAL_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DRUID_HEAL_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DRUID_HEAL_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DRUID_HEAL_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DRUID_HEAL_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DRUID_HEAL_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DRUID_HEAL_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DRUID_HEAL_RANGED, true);
-}
-
-void equipmentDruidMelee(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DRUID_MELEE_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DRUID_MELEE_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DRUID_MELEE_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DRUID_MELEE_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DRUID_MELEE_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DRUID_MELEE_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DRUID_MELEE_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DRUID_MELEE_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DRUID_MELEE_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DRUID_MELEE_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DRUID_MELEE_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DRUID_MELEE_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DRUID_MELEE_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DRUID_MELEE_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DRUID_MELEE_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DRUID_MELEE_RANGED, true);
-}
-
-void equipmentDruidCaster(Player* player)
-{
-    player->EquipNewItem(EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_DRUID_CASTER_HEAD, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_NECK, EQUIPMENT_SLOT_DRUID_CASTER_NECK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_DRUID_CASTER_SHOULDERS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_DRUID_CASTER_CHEST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_DRUID_CASTER_WAIST, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_DRUID_CASTER_LEGS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_DRUID_CASTER_FEET, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_DRUID_CASTER_WRISTS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_HANDS, EQUIPMENT_SLOT_DRUID_CASTER_HANDS, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_DRUID_CASTER_FINGER1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_FINGER2, EQUIPMENT_SLOT_DRUID_CASTER_FINGER2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_DRUID_CASTER_TRINKET1, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_TRINKET2, EQUIPMENT_SLOT_DRUID_CASTER_TRINKET2, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_BACK, EQUIPMENT_SLOT_DRUID_CASTER_BACK, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_DRUID_CASTER_MAINHAND, true);
-    player->EquipNewItem(EQUIPMENT_SLOT_RANGED, EQUIPMENT_SLOT_DRUID_CASTER_RANGED, true);
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+        {
+            if (fields[slot].Get<uint32>() == 0)
+            {
+                continue;
+            }
+            player->EquipNewItem(slot, fields[slot].Get<uint32>(), true);
+        }
+    }
 }
 
 class npc_promocion : public CreatureScript
@@ -489,7 +98,7 @@ class npc_promocion : public CreatureScript
 
         uint8 getAccountPromotionCount(uint32 accountId)
         {
-            QueryResult result = LoginDatabase.Query("SELECT COUNT(`accountId`) FROM `promotion` WHERE `accountId`={}", accountId);
+            QueryResult result = LoginDatabase.Query("SELECT COUNT(`accountId`) FROM `mod_npc_promotion_log` WHERE `accountId`={}", accountId);
 
             if (result)
             {
@@ -502,7 +111,7 @@ class npc_promocion : public CreatureScript
 
         uint8 getIpPromotionCount(uint32 accountId)
         {
-            QueryResult result = LoginDatabase.Query("SELECT COUNT(`ip`) FROM `promotion` WHERE `accountId`={}", accountId);
+            QueryResult result = LoginDatabase.Query("SELECT COUNT(`ip`) FROM `mod_npc_promotion_log` WHERE `accountId`={}", accountId);
 
             if (result)
             {
@@ -522,8 +131,7 @@ class npc_promocion : public CreatureScript
             std::string characterName = player->GetSession()->GetPlayerName();
             std::string ipAccount = player->GetSession()->GetRemoteAddress();
 
-            QueryResult result = LoginDatabase.Query("INSERT INTO `promotion` (`accountId`, `accountName`, `characterName`, `ip`) VALUES ({}, '{}', '{}', '{}')",
-                accountId, accountName.c_str(), characterName.c_str(), ipAccount.c_str());
+            QueryResult result = LoginDatabase.Query("INSERT INTO `mod_npc_promotion_log` (`accountId`, `accountName`, `characterName`, `ip`) VALUES ({}, '{}', '{}', '{}')", accountId, accountName.c_str(), characterName.c_str(), ipAccount.c_str());
             return true;
         }
 
@@ -531,9 +139,13 @@ class npc_promocion : public CreatureScript
         {
             uint8 countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
             int8 countIp;
-            if (npcPromotionEnableIpLimit) {
+
+            if (npcPromotionEnableIpLimit)
+            {
                 countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
-            } else {
+            }
+            else
+            {
                 countIp = -1;
             }
 
@@ -592,7 +204,9 @@ class npc_promocion : public CreatureScript
             }
 
             if (player->getLevel() >= npcPromotionMaxLevel)
+            {
                 AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
+            }
 
             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
             SendGossipMenuFor(player, NPC_TEXT_ID, creature);
@@ -606,122 +220,184 @@ class npc_promocion : public CreatureScript
             switch (action)
             {
                 case GOSSIP_ACTION_INFO_DEF + 1:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentWarriorTank(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "tank");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 2:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentWarriorDps(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 3:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentPaladinTank(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "tank");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 4:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentPaladinHeal(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "heal");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 5:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentPaladinDps(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 6:
-                    addPromotionLog(player);
-                    player->learnSpell(STAVES);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(MAIL);
-                    equipmentHunter(player);
+                    {
+                        addPromotionLog(player);
+                        player->learnSpell(STAVES);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                        switch (player->getRace())
+                        {
+                            case RACE_DRAENEI:
+                            case RACE_NIGHTELF:
+                            case RACE_ORC:
+                            case RACE_TROLL:
+                            case RACE_BLOODELF:
+                                {
+                                    player->AddItem(AMMUNITION_ARROW, AMMUNITION_COUNT);
+                                }
+                                break;
+                            case RACE_DWARF:
+                            case RACE_TAUREN:
+                                {
+                                    player->AddItem(AMMUNITION_BULLETS, AMMUNITION_COUNT);
+                                }
+                                break;
+                        default:
+                            break;
+                        }
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 7:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentRogue(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 8:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentPriestHeal(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "heal");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 9:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentPriestShadow(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 10:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentDkTank(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "tank");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 11:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(PLATE_MAIL);
-                    equipmentDkDps(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(PLATE_MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 12:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(MAIL);
-                    equipmentShamanCaster(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "caster");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 13:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(MAIL);
-                    equipmentShamanMelee(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "melee");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 14:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    player->learnSpell(MAIL);
-                    equipmentShamanHeal(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        player->learnSpell(MAIL);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "heal");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 15:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentMage(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 16:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentWarlock(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "dps");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 17:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentDruidTank(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "tank");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 18:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentDruidHeal(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "heal");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 19:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentDruidMelee(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "caster");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 20:
-                    addPromotionLog(player);
-                    promotionPlayerTemplate(player);
-                    equipmentDruidCaster(player);
+                    {
+                        addPromotionLog(player);
+                        promotionPlayerTemplate(player);
+                        equipmentPlayer(player, player->getClass(), player->GetTeamId(), "melee");
+                    }
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 21:
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 22:
-                    /* Teleport a Dalaran si es 80. */
-                    player->TeleportTo(571, 5804.14f, 624.77f, 647.76f, 1.64f);
+                    {
+                        // Teleport to Dalaran if it is 80.
+                        player->TeleportTo(571, 5804.14f, 624.77f, 647.76f, 1.64f);
+                    }
                     break;
                 default:
                     break;
@@ -762,23 +438,31 @@ public:
     static bool HandleViewNpcPromotionCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
+        {
             return false;
+        }
 
         Player* target = nullptr;
         std::string playerName;
 
         if (!handler->extractPlayerTarget((char*)args, &target, nullptr, &playerName))
+        {
             return false;
+        }
 
         uint32 playerAccountId;
 
         if (target)
+        {
             playerAccountId = target->GetSession()->GetAccountId();
+        }
         else
+        {
             getTargetAccountIdByName(playerName, playerAccountId);
+        }
 
         QueryResult result = LoginDatabase.Query("SELECT * FROM `account` WHERE `id`={};", playerAccountId);
-        QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `promotion` WHERE `accountId`={};", playerAccountId);
+        QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `mod_npc_promotion_log` WHERE `accountId`={};", playerAccountId);
 
         if (result)
         {
@@ -808,7 +492,8 @@ public:
                     std::string ip = promotion[4].Get<std::string>();
                     std::string date = promotion[5].Get<std::string>();
                     handler->PSendSysMessage("Character: {}, {}: {}, date: {}", characterName.c_str(), ip.c_str(), date.c_str());
-                } while (resultPromotion->NextRow());
+                }
+                while (resultPromotion->NextRow());
             }
             return true;
         }
@@ -816,7 +501,6 @@ public:
         {
             (ChatHandler(handler->GetSession())).PSendSysMessage(SMSG_CHAT_PLAYER_NOT_FOUND);
         }
-
         return true;
     }
 };
@@ -830,33 +514,26 @@ public:
     {
         if (!reload)
         {
-            std::string conf_path = _CONF_DIR;
-            std::string cfg_file = conf_path + "/mod_npc_promotion.conf";
-#ifdef WIN32
-            cfg_file = "mod_npc_promotion.conf";
-#endif
-            std::string cfg_def_file = cfg_file + ".dist";
-
             sConfigMgr->LoadModulesConfigs();
 
-            npcPromotionEnabled = sConfigMgr->GetBoolDefault("NpcPromotion.enable", true);
-            npcPromotionAnnounceEnable = sConfigMgr->GetBoolDefault("NpcPromotion.announceEnable", true);
-            npcPromotionCount = sConfigMgr->GetIntDefault("NpcPromotion.count", 1);
-            npcPromotionEnableIpLimit = sConfigMgr->GetBoolDefault("NpcPromotion.enableIpLimit", true);
-            npcPromotionIpCount = sConfigMgr->GetIntDefault("NpcPromotion.countIp", 1);
-            npcPromotionMaxLevel = sConfigMgr->GetIntDefault("NpcPromotion.maxLevel", 80);
-            npcPromotionMoney = sConfigMgr->GetIntDefault("NpcPromotion.money", 25000000);
+            npcPromotionEnabled = sConfigMgr->GetOption<bool>("NpcPromotion.enable", true);
+            npcPromotionAnnounceEnable = sConfigMgr->GetOption<bool>("NpcPromotion.announceEnable", true);
+            npcPromotionCount = sConfigMgr->GetOption<uint8>("NpcPromotion.count", 1);
+            npcPromotionEnableIpLimit = sConfigMgr->GetOption<bool>("NpcPromotion.enableIpLimit", true);
+            npcPromotionIpCount = sConfigMgr->GetOption<uint8>("NpcPromotion.countIp", 1);
+            npcPromotionMaxLevel = sConfigMgr->GetOption<uint8>("NpcPromotion.maxLevel", 80);
+            npcPromotionMoney = sConfigMgr->GetOption<uint16>("NpcPromotion.money", 25000000);
 
-            NpcPromotionBagEnable = sConfigMgr->GetBoolDefault("NpcPromotion.bagEnable", true);
-            NpcPromotionEquippedbags = sConfigMgr->GetBoolDefault("NpcPromotion.equippedbags", true);
-            npcPromotionBag = sConfigMgr->GetIntDefault("NpcPromotion.bag", 20400);
-            npcPromotionBagAmount = sConfigMgr->GetIntDefault("NpcPromotion.bagAmount", 4);
+            NpcPromotionBagEnable = sConfigMgr->GetOption<bool>("NpcPromotion.bagEnable", true);
+            NpcPromotionEquippedbags = sConfigMgr->GetOption<bool>("NpcPromotion.equippedbags", true);
+            npcPromotionBag = sConfigMgr->GetOption<uint8>("NpcPromotion.bag", 20400);
+            npcPromotionBagAmount = sConfigMgr->GetOption<uint8>("NpcPromotion.bagAmount", 4);
 
-            NpcPromotionMountEnable = sConfigMgr->GetBoolDefault("NpcPromotion.mountEnable", true);
-            NpcPromotionMountReward = sConfigMgr->GetIntDefault("NpcPromotion.mountReward", 74856);
+            NpcPromotionMountEnable = sConfigMgr->GetOption<bool>("NpcPromotion.mountEnable", true);
+            NpcPromotionMountReward = sConfigMgr->GetOption<uint8>("NpcPromotion.mountReward", 74856);
 
-            NpcPromotionWarriorTankEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriorTank.enable", true);
-            NpcPromotionWarriorDpsEnabled = sConfigMgr->GetBoolDefault("NpcPromotionWarriordps.enable", true);
+            NpcPromotionWarriorTankEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriorTank.enable", true);
+            NpcPromotionWarriorDpsEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriordps.enable", true);
         }
     }
 };
