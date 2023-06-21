@@ -12,6 +12,10 @@
 #include "GossipDef.h"
 #include "ScriptedGossip.h"
 
+#if AC_COMPILER == AC_COMPILER_GNU
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
 static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
     npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
