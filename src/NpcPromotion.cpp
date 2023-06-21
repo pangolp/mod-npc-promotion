@@ -526,15 +526,15 @@ public:
             npcPromotionEnableIpLimit = sConfigMgr->GetOption<bool>("NpcPromotion.enableIpLimit", true);
             npcPromotionIpCount = sConfigMgr->GetOption<uint8>("NpcPromotion.countIp", 1);
             npcPromotionMaxLevel = sConfigMgr->GetOption<uint8>("NpcPromotion.maxLevel", 80);
-            npcPromotionMoney = sConfigMgr->GetOption<uint16>("NpcPromotion.money", 25000000);
+            npcPromotionMoney = sConfigMgr->GetOption<uint32>("NpcPromotion.money", 25000000);
 
             NpcPromotionBagEnable = sConfigMgr->GetOption<bool>("NpcPromotion.bagEnable", true);
             NpcPromotionEquippedbags = sConfigMgr->GetOption<bool>("NpcPromotion.equippedbags", true);
-            npcPromotionBag = sConfigMgr->GetOption<uint8>("NpcPromotion.bag", 20400);
+            npcPromotionBag = sConfigMgr->GetOption<uint16>("NpcPromotion.bag", 20400);
             npcPromotionBagAmount = sConfigMgr->GetOption<uint8>("NpcPromotion.bagAmount", 4);
 
             NpcPromotionMountEnable = sConfigMgr->GetOption<bool>("NpcPromotion.mountEnable", true);
-            NpcPromotionMountReward = sConfigMgr->GetOption<uint8>("NpcPromotion.mountReward", 74856);
+            NpcPromotionMountReward = sConfigMgr->GetOption<uint32>("NpcPromotion.mountReward", 74856);
 
             NpcPromotionWarriorTankEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriorTank.enable", true);
             NpcPromotionWarriorDpsEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriordps.enable", true);
