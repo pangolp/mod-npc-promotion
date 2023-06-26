@@ -16,13 +16,18 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-static bool npcPromotionEnabled, npcPromotionAnnounceEnable;
-static int npcPromotionCount, npcPromotionIpCount, npcPromotionMaxLevel,
-    npcPromotionMoney, npcPromotionBag, npcPromotionBagAmount,
-    NpcPromotionMountReward;
-static bool NpcPromotionWarriorTankEnabled, NpcPromotionWarriorDpsEnabled,
-    npcPromotionEnableIpLimit, NpcPromotionBagEnable, NpcPromotionEquippedbags,
-    NpcPromotionMountEnable;
+struct NpcPromotion
+{
+    bool ENABLED, ANNOUNCE_ENABLE;
+    int COUNT, IP_COUNT, LEVEL, MONEY, BAG, BAG_AMOUNT, MOUNT_REWARD;
+    bool WARRIOR_TANK, WARRIOR_DPS;
+    bool ENABLE_IP_LIMIT, BAG_ENABLE, EQUIPPED_BAGS, MOUNT_ENABLE;
+    bool EMBLEMS;
+    uint32 EMBLEMS_ID, EMBLEMS_COUNT;
+    uint32 ACORE_STRING_MESSAGE;
+};
+
+NpcPromotion npcPromotion;
 
 class NpcPromotionAnnouncer : public PlayerScript
 {
@@ -31,24 +36,23 @@ class NpcPromotionAnnouncer : public PlayerScript
 
         void OnLogin(Player* player)
         {
-            if (npcPromotionAnnounceEnable)
+            if (npcPromotion.ANNOUNCE_ENABLE)
             {
-                ChatHandler(player->GetSession()).SendSysMessage(40000);
+                ChatHandler(player->GetSession()).SendSysMessage(npcPromotion.ACORE_STRING_MESSAGE);
             }
         }
 };
 
 void promotionPlayerTemplate(Player* player)
 {
-    player->GiveLevel(80);
+    player->GiveLevel(npcPromotion.LEVEL);
     player->InitTalentForLevel();
     player->SetUInt32Value(PLAYER_XP, 0);
-    player->ModifyMoney(npcPromotionMoney);
+    player->ModifyMoney(npcPromotion.MONEY);
 
-    //Bags
-    if (NpcPromotionBagEnable)
+    if (npcPromotion.BAG_ENABLE)
     {
-        if (NpcPromotionEquippedbags)
+        if (npcPromotion.EQUIPPED_BAGS)
         {
             for (int slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; slot++)
             {
@@ -56,41 +60,49 @@ void promotionPlayerTemplate(Player* player)
                 {
                     player->DestroyItem(INVENTORY_SLOT_BAG_0, slot, true);
                 }
-                player->EquipNewItem(slot, npcPromotionBag, true);
+                player->EquipNewItem(slot, npcPromotion.BAG, true);
             }
         }
         else
         {
-            player->AddItem(npcPromotionBag, npcPromotionBagAmount);
+            player->AddItem(npcPromotion.BAG, npcPromotion.BAG_AMOUNT);
         }
     }
 
-    // Riding
-    if (NpcPromotionMountEnable)
+    if (npcPromotion.MOUNT_ENABLE)
     {
         player->learnSpell(SKILL_RIDING_75);
         player->learnSpell(SKILL_RIDING_100);
         player->learnSpell(SKILL_RIDING_FLYING);
         player->learnSpell(SKILL_RIDING_ARTISING);
-        player->learnSpell(NpcPromotionMountReward);
+        player->learnSpell(SKILL_COLD_WEATHER_FLYING);
+        player->learnSpell(npcPromotion.MOUNT_REWARD);
     }
+
     player->UpdateSkillsToMaxSkillsForLevel();
 }
 
 void equipmentPlayer(Player* player, uint8 playerClass, uint8 playerTeam, std::string playerFunction)
 {
-    QueryResult result = LoginDatabase.Query("SELECT `head`, `neck`, `shoulders`, `body`, `chest`, `waist`, `legs`, `feet`, `wrists`, `hands`, `finger1`, `finger2`, `trinket1`, `trinket2`, `back`, `mainhand`, `offhand`, `ranged`, `tabard` FROM `mod_npc_promotion_items` WHERE `class`={} AND `faction`={} AND `function`='{}';", playerClass, playerTeam, playerFunction);
-
-    if (result)
+    if (npcPromotion.EMBLEMS)
     {
-        Field* fields = result->Fetch();
-        for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+        player->AddItem(npcPromotion.EMBLEMS_ID, npcPromotion.EMBLEMS_COUNT);
+    }
+    else
+    {
+        QueryResult result = LoginDatabase.Query("SELECT `head`, `neck`, `shoulders`, `body`, `chest`, `waist`, `legs`, `feet`, `wrists`, `hands`, `finger1`, `finger2`, `trinket1`, `trinket2`, `back`, `mainhand`, `offhand`, `ranged`, `tabard` FROM `mod_npc_promotion_items` WHERE `class`={} AND `faction`={} AND `function`='{}';", playerClass, playerTeam, playerFunction);
+
+        if (result)
         {
-            if (fields[slot].Get<uint32>() == 0)
+            Field* fields = result->Fetch();
+            for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
             {
-                continue;
+                if (fields[slot].Get<uint32>() == 0)
+                {
+                    continue;
+                }
+                player->EquipNewItem(slot, fields[slot].Get<uint32>(), true);
             }
-            player->EquipNewItem(slot, fields[slot].Get<uint32>(), true);
         }
     }
 }
@@ -124,43 +136,47 @@ class npc_promocion : public CreatureScript
             }
 
             return 0;
-
         }
 
         bool addPromotionLog(Player* player)
         {
-            uint32 accountId = player->GetSession()->GetAccountId();
-            std::string accountName;
-            AccountMgr::GetName(accountId, accountName);
-            std::string characterName = player->GetSession()->GetPlayerName();
-            std::string ipAccount = player->GetSession()->GetRemoteAddress();
+            if (npcPromotion.ENABLE_IP_LIMIT)
+            {
+                uint32 accountId = player->GetSession()->GetAccountId();
+                std::string accountName;
+                AccountMgr::GetName(accountId, accountName);
+                std::string characterName = player->GetSession()->GetPlayerName();
+                std::string ipAccount = player->GetSession()->GetRemoteAddress();
 
-            QueryResult result = LoginDatabase.Query("INSERT INTO `mod_npc_promotion_log` (`accountId`, `accountName`, `characterName`, `ip`) VALUES ({}, '{}', '{}', '{}')", accountId, accountName.c_str(), characterName.c_str(), ipAccount.c_str());
+                QueryResult result = LoginDatabase.Query("INSERT INTO `mod_npc_promotion_log` (`accountId`, `accountName`, `characterName`, `ip`) VALUES ({}, '{}', '{}', '{}')", accountId, accountName.c_str(), characterName.c_str(), ipAccount.c_str());
+            }
             return true;
         }
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
-            uint8 countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
             int8 countIp;
+            int8 countAccount;
 
-            if (npcPromotionEnableIpLimit)
+            if (npcPromotion.ENABLE_IP_LIMIT)
             {
+                countAccount = getAccountPromotionCount(player->GetSession()->GetAccountId());
                 countIp = getIpPromotionCount(player->GetSession()->GetAccountId());
             }
             else
             {
                 countIp = -1;
+                countAccount = -1;
             }
 
-            if ((player->getLevel() < npcPromotionMaxLevel) && (((countAccount < npcPromotionCount)) || (countIp < npcPromotionIpCount)))
+            if ((player->getLevel() < npcPromotion.LEVEL) && (((countAccount < npcPromotion.COUNT)) || (countIp < npcPromotion.IP_COUNT)))
             {
                 switch (player->getClass())
                 {
                     case CLASS_WARRIOR:
-                        if (NpcPromotionWarriorTankEnabled)
+                        if (npcPromotion.WARRIOR_TANK)
                             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_WARRIOR_TANK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                        if (NpcPromotionWarriorDpsEnabled)
+                        if (npcPromotion.WARRIOR_DPS)
                             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_WARRIOR_DPS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                         break;
                     case CLASS_PALADIN:
@@ -207,12 +223,13 @@ class npc_promocion : public CreatureScript
                 }
             }
 
-            if (player->getLevel() >= npcPromotionMaxLevel)
+            AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+
+            if (player->getLevel() >= npcPromotion.LEVEL)
             {
                 AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
             }
 
-            AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
             SendGossipMenuFor(player, NPC_TEXT_ID, creature);
             return true;
         }
@@ -520,24 +537,30 @@ public:
         {
             sConfigMgr->LoadModulesConfigs();
 
-            npcPromotionEnabled = sConfigMgr->GetOption<bool>("NpcPromotion.enable", true);
-            npcPromotionAnnounceEnable = sConfigMgr->GetOption<bool>("NpcPromotion.announceEnable", true);
-            npcPromotionCount = sConfigMgr->GetOption<uint8>("NpcPromotion.count", 1);
-            npcPromotionEnableIpLimit = sConfigMgr->GetOption<bool>("NpcPromotion.enableIpLimit", true);
-            npcPromotionIpCount = sConfigMgr->GetOption<uint8>("NpcPromotion.countIp", 1);
-            npcPromotionMaxLevel = sConfigMgr->GetOption<uint8>("NpcPromotion.maxLevel", 80);
-            npcPromotionMoney = sConfigMgr->GetOption<uint32>("NpcPromotion.money", 25000000);
+            npcPromotion.ACORE_STRING_MESSAGE = sConfigMgr->GetOption<uint32>("npc.promotion.acore.string.message", 40000);
 
-            NpcPromotionBagEnable = sConfigMgr->GetOption<bool>("NpcPromotion.bagEnable", true);
-            NpcPromotionEquippedbags = sConfigMgr->GetOption<bool>("NpcPromotion.equippedbags", true);
-            npcPromotionBag = sConfigMgr->GetOption<uint16>("NpcPromotion.bag", 20400);
-            npcPromotionBagAmount = sConfigMgr->GetOption<uint8>("NpcPromotion.bagAmount", 4);
+            npcPromotion.ENABLED = sConfigMgr->GetOption<bool>("npc.promotion.enable", true);
+            npcPromotion.ANNOUNCE_ENABLE = sConfigMgr->GetOption<bool>("npc.promotion.announce.enable", true);
+            npcPromotion.COUNT = sConfigMgr->GetOption<uint8>("npc.promotion.count", 1);
+            npcPromotion.ENABLE_IP_LIMIT = sConfigMgr->GetOption<bool>("npc.promotion.enable.ip.limit", true);
+            npcPromotion.IP_COUNT = sConfigMgr->GetOption<uint8>("npc.promotion.count.ip", 1);
+            npcPromotion.LEVEL = sConfigMgr->GetOption<uint8>("npc.promotion.level", 80);
+            npcPromotion.MONEY = sConfigMgr->GetOption<uint32>("npc.promotion.money", 25000000);
 
-            NpcPromotionMountEnable = sConfigMgr->GetOption<bool>("NpcPromotion.mountEnable", true);
-            NpcPromotionMountReward = sConfigMgr->GetOption<uint32>("NpcPromotion.mountReward", 74856);
+            npcPromotion.BAG_ENABLE = sConfigMgr->GetOption<bool>("npc.promotion.bag.enable", true);
+            npcPromotion.EQUIPPED_BAGS = sConfigMgr->GetOption<bool>("npc.promotion.equipped.bags", true);
+            npcPromotion.BAG = sConfigMgr->GetOption<uint16>("npc.promotion.bag", 20400);
+            npcPromotion.BAG_AMOUNT = sConfigMgr->GetOption<uint8>("npc.promotion.bag.amount", 4);
 
-            NpcPromotionWarriorTankEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriorTank.enable", true);
-            NpcPromotionWarriorDpsEnabled = sConfigMgr->GetOption<bool>("NpcPromotionWarriordps.enable", true);
+            npcPromotion.MOUNT_ENABLE = sConfigMgr->GetOption<bool>("npc.promotion.mount.enable", true);
+            npcPromotion.MOUNT_REWARD = sConfigMgr->GetOption<uint32>("npc.promotion.mount.reward", 74856);
+
+            npcPromotion.EMBLEMS = sConfigMgr->GetOption<bool>("npc.promotion.emblems.enable", true);
+            npcPromotion.EMBLEMS_ID = sConfigMgr->GetOption<uint32>("npc.promotion.emblems.id", 49426);
+            npcPromotion.EMBLEMS_COUNT = sConfigMgr->GetOption<uint32>("npc.promotion.emblems.count", 2000);
+
+            npcPromotion.WARRIOR_TANK = sConfigMgr->GetOption<bool>("npc.promotion.warrior.tank.enable", true);
+            npcPromotion.WARRIOR_DPS = sConfigMgr->GetOption<bool>("npc.promotion.warrior.dps.enable", true);
         }
     }
 };

@@ -1,8 +1,6 @@
-
 SET @MENUID:=62000;
 
 DELETE FROM `gossip_menu_option` WHERE `MenuID`=@MENUID AND `OptionID` BETWEEN 0 AND 21;
-
 INSERT INTO `gossip_menu_option` (`MenuID`, `OptionID`, `OptionIcon`, `OptionText`, `OptionBroadcastTextID`, `OptionType`, `OptionNpcFlag`, `ActionMenuID`, `ActionPoiID`, `BoxCoded`, `BoxMoney`, `BoxText`, `BoxBroadcastTextID`, `VerifiedBuild`) VALUES
 (@MENUID, 0, 0, "WARRIOR TANK", 0, 1, 1, 0, 0, 0, 0, "", 0, 0),
 (@MENUID, 1, 0, "WARRIOR DPS", 0, 1, 1, 0, 0, 0, 0, "", 0, 0),
@@ -28,7 +26,6 @@ INSERT INTO `gossip_menu_option` (`MenuID`, `OptionID`, `OptionIcon`, `OptionTex
 (@MENUID, 21, 0, "GO TO DALARAN", 0, 1, 1, 0, 0, 0, 0, "", 0, 0);
 
 DELETE FROM `gossip_menu_option_locale` WHERE `MenuID`=@MENUID AND `OptionID` BETWEEN 0 AND 21;
-
 INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES
 (@MENUID, 0, "esES", "GUERRERO TANQUE", ""),
 (@MENUID, 1, "esES", "GUERRERO DPS", ""),
