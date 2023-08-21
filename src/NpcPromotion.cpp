@@ -25,6 +25,8 @@ struct NpcPromotion
     bool EMBLEMS;
     uint32 EMBLEMS_ID, EMBLEMS_COUNT;
     uint32 ACORE_STRING_MESSAGE;
+    bool enableMoney, enableLevel;
+    bool ridingArtising;
 };
 
 NpcPromotion npcPromotion;
@@ -45,10 +47,15 @@ class NpcPromotionAnnouncer : public PlayerScript
 
 void promotionPlayerTemplate(Player* player)
 {
-    player->GiveLevel(npcPromotion.LEVEL);
-    player->InitTalentForLevel();
-    player->SetUInt32Value(PLAYER_XP, 0);
-    player->ModifyMoney(npcPromotion.MONEY);
+    if (npcPromotion.enableLevel)
+    {
+        player->GiveLevel(npcPromotion.LEVEL);
+        player->InitTalentForLevel();
+        player->SetUInt32Value(PLAYER_XP, 0);
+    }
+
+    if (npcPromotion.enableMoney)
+        player->ModifyMoney(npcPromotion.MONEY);
 
     if (npcPromotion.BAG_ENABLE)
     {
@@ -74,9 +81,61 @@ void promotionPlayerTemplate(Player* player)
         player->learnSpell(SKILL_RIDING_75);
         player->learnSpell(SKILL_RIDING_100);
         player->learnSpell(SKILL_RIDING_FLYING);
-        player->learnSpell(SKILL_RIDING_ARTISING);
+        if (npcPromotion.ridingArtising)
+            player->learnSpell(SKILL_RIDING_ARTISING);
         player->learnSpell(SKILL_COLD_WEATHER_FLYING);
-        player->learnSpell(npcPromotion.MOUNT_REWARD);
+        if (npcPromotion.MOUNT_REWARD > 0)
+        {
+            player->learnSpell(npcPromotion.MOUNT_REWARD);
+        }
+        else
+        {
+            switch (player->getRace())
+            {
+                case RACE_HUMAN:
+                    player->learnSpell(23228);
+                    player->learnSpell(32239);
+                    break;
+                case RACE_DWARF:
+                    player->learnSpell(23239);
+                    player->learnSpell(32239);
+                    break;
+                case RACE_NIGHTELF:
+                    player->learnSpell(23338);
+                    player->learnSpell(32239);
+                    break;
+                case RACE_GNOME:
+                    player->learnSpell(23223);
+                    player->learnSpell(32239);
+                    break;
+                case RACE_DRAENEI:
+                    player->learnSpell(35713);
+                    player->learnSpell(32239);
+                    break;
+                case RACE_ORC:
+                    player->learnSpell(23250);
+                    player->learnSpell(32243);
+                    break;
+                case RACE_UNDEAD_PLAYER:
+                    player->learnSpell(66846);
+                    player->learnSpell(32243);
+                    break;
+                case RACE_TAUREN:
+                    player->learnSpell(23248);
+                    player->learnSpell(32243);
+                    break;
+                case RACE_TROLL:
+                    player->learnSpell(23242);
+                    player->learnSpell(32243);
+                    break;
+                case RACE_BLOODELF:
+                    player->learnSpell(33660);
+                    player->learnSpell(32243);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     player->UpdateSkillsToMaxSkillsForLevel();
@@ -544,7 +603,9 @@ public:
             npcPromotion.COUNT = sConfigMgr->GetOption<uint8>("npc.promotion.count", 1);
             npcPromotion.ENABLE_IP_LIMIT = sConfigMgr->GetOption<bool>("npc.promotion.enable.ip.limit", true);
             npcPromotion.IP_COUNT = sConfigMgr->GetOption<uint8>("npc.promotion.count.ip", 1);
+            npcPromotion.enableLevel = sConfigMgr->GetOption<bool>("npc.promotion.enable.level", true);
             npcPromotion.LEVEL = sConfigMgr->GetOption<uint8>("npc.promotion.level", 80);
+            npcPromotion.enableMoney = sConfigMgr->GetOption<bool>("npc.promotion.enable.money", true);
             npcPromotion.MONEY = sConfigMgr->GetOption<uint32>("npc.promotion.money", 25000000);
 
             npcPromotion.BAG_ENABLE = sConfigMgr->GetOption<bool>("npc.promotion.bag.enable", true);
@@ -554,6 +615,7 @@ public:
 
             npcPromotion.MOUNT_ENABLE = sConfigMgr->GetOption<bool>("npc.promotion.mount.enable", true);
             npcPromotion.MOUNT_REWARD = sConfigMgr->GetOption<uint32>("npc.promotion.mount.reward", 74856);
+            npcPromotion.ridingArtising = sConfigMgr->GetOption<bool>("npc.promotion.riding.artising", true);
 
             npcPromotion.EMBLEMS = sConfigMgr->GetOption<bool>("npc.promotion.emblems.enable", true);
             npcPromotion.EMBLEMS_ID = sConfigMgr->GetOption<uint32>("npc.promotion.emblems.id", 49426);
