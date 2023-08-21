@@ -69,3 +69,5 @@ INSERT INTO `mod_npc_promotion_items` (`class`, `faction`, `function`, `head`, `
 (10, 1, 'tank', 43260, 45812, 43433, 0, 43434, 43437, 43438, 43439, 43435, 43436, 45809, 45809, 37064, 38359, 45811, 36980, 0, 38365, 0);
 
 UPDATE `mod_npc_promotion_items` SET `class`=11 WHERE `class`=10;
+
+UPDATE `mod_npc_promotion_items` SET `offhand`=37061 WHERE `class`=7 AND `function`='heal';
