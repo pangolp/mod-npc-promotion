@@ -11,6 +11,7 @@
 #include "NpcPromotion.h"
 #include "GossipDef.h"
 #include "ScriptedGossip.h"
+#include "SpellMgr.h"
 
 #if AC_COMPILER == AC_COMPILER_GNU
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -228,7 +229,7 @@ class npc_promocion : public CreatureScript
                 countAccount = -1;
             }
 
-            if ((player->getLevel() < npcPromotion.LEVEL) && (((countAccount < npcPromotion.COUNT)) || (countIp < npcPromotion.IP_COUNT)))
+            if ((player->GetLevel() < npcPromotion.LEVEL) && (((countAccount < npcPromotion.COUNT)) || (countIp < npcPromotion.IP_COUNT)))
             {
                 switch (player->getClass())
                 {
@@ -284,7 +285,7 @@ class npc_promocion : public CreatureScript
 
             AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_CLOSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
 
-            if (player->getLevel() >= npcPromotion.LEVEL)
+            if (player->GetLevel() >= npcPromotion.LEVEL)
             {
                 AddGossipItemFor(player, GOSSIP_MENU_PROMOTION, GOSSIP_MENU_TP_DALARAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
             }
@@ -498,12 +499,12 @@ public:
     {
         static ChatCommandTable promotionSetCommandTable =
         {
-            { "view", SEC_MODERATOR, false, &HandleViewNpcPromotionCommand, "" }
+            { "view", HandleViewNpcPromotionCommand,  SEC_MODERATOR,  Console::No }
         };
 
         static ChatCommandTable commandTable =
         {
-            { "promotion", SEC_MODERATOR, false, nullptr, "", promotionSetCommandTable}
+            { "promotion", promotionSetCommandTable }
         };
 
         return commandTable;
