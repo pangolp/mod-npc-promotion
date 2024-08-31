@@ -12,7 +12,4 @@ Pronto haré un video en español, para explicar cómo funciona.
 
 * [Nefertum](https://gitlab.com/Nefertum) (autor del módulo)
 * [Stevej / Pangolp](https://github.com/pangolp) (autor del módulo)
-* [BarbzYHOOL](https://github.com/barbzyhool)
-* [Talamortis](https://github.com/talamortis)
-
-AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)
+* AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)

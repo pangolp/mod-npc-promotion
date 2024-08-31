@@ -1,4 +1,4 @@
-SET @ID:=100000;
+SET @ID:=100002;
 SET @GUID:=3110360;
 
 DELETE FROM `creature` WHERE `id1`=@ID;
