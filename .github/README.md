@@ -12,8 +12,5 @@ Soon I will be making a video in Spanish, to explain how it works.
 
 * [Nefertum](https://gitlab.com/Nefertum) (module author)
 * [Stevej / Pangolp](https://github.com/pangolp) (module author)
-* [BarbzYHOOL](https://github.com/barbzyhool)
-* [Talamortis](https://github.com/talamortis)
-
 * [Translator](https://www.deepl.com/translator)
 * AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)

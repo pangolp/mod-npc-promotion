@@ -13,10 +13,6 @@
 #include "ScriptedGossip.h"
 #include "SpellMgr.h"
 
-#if AC_COMPILER == AC_COMPILER_GNU
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
 struct NpcPromotion
 {
     bool ENABLED, ANNOUNCE_ENABLE;
@@ -516,34 +512,23 @@ public:
         accountId = (*result)[0].Get<int32>();
     }
 
-    static bool HandleViewNpcPromotionCommand(ChatHandler* handler, const char* args)
+    static bool HandleViewNpcPromotionCommand(ChatHandler* handler, std::string playerName)
     {
-        if (!*args)
+        if (!normalizePlayerName(playerName))
         {
             return false;
         }
 
-        Player* target = nullptr;
-        std::string playerName;
+        ObjectGuid targetGuid = sCharacterCache->GetCharacterGuidByName(playerName);
+        uint32 targetAccountId = sCharacterCache->GetCharacterAccountIdByGuid(targetGuid);
 
-        if (!handler->extractPlayerTarget((char*)args, &target, nullptr, &playerName))
+        if (!targetGuid)
         {
             return false;
         }
 
-        uint32 playerAccountId;
-
-        if (target)
-        {
-            playerAccountId = target->GetSession()->GetAccountId();
-        }
-        else
-        {
-            getTargetAccountIdByName(playerName, playerAccountId);
-        }
-
-        QueryResult result = LoginDatabase.Query("SELECT * FROM `account` WHERE `id`={};", playerAccountId);
-        QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `mod_npc_promotion_log` WHERE `accountId`={};", playerAccountId);
+        QueryResult result = LoginDatabase.Query("SELECT * FROM `account` WHERE `id`={};", targetAccountId);
+        QueryResult resultPromotion = LoginDatabase.Query("SELECT * FROM `mod_npc_promotion_log` WHERE `accountId`={};", targetAccountId);
 
         if (result)
         {
