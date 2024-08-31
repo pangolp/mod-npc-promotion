@@ -557,7 +557,7 @@ public:
                     std::string characterName = promotion[3].Get<std::string>();
                     std::string ip = promotion[4].Get<std::string>();
                     std::string date = promotion[5].Get<std::string>();
-                    handler->PSendSysMessage("Character: {}, {}: {}, date: {}", characterName.c_str(), ip.c_str(), date.c_str());
+                    handler->PSendSysMessage("Character: {} - IP: {} - date: {}", characterName.c_str(), ip.c_str(), date.c_str());
                 }
                 while (resultPromotion->NextRow());
             }
